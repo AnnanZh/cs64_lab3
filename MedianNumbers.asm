@@ -1,87 +1,97 @@
- xSpim MediNumbers.asm program
-# 
+# xSpim MedianNumbers.asm program
+#Xingxing,Geng 02/03 
 #
 
 #  Data Area - allocate and initialize variables
     .data
-numberEnter:
-    .asciiz "Enter the next number:\n"
 
-medianNo:
-    .asciiz "Median: "
+prompt:
+	.asciiz "Enter the next number:\n"
+
+result:
+	.asciiz "Median: "
 
 
 #Text Area (i.e. instructions)
     .text
 
 main:
-#t0,t1,t2 are numbers given by users
-#t3,t4,t5 stand for min, med and max
-#t6 is boolean
-#t7 is a temparary variable
+# Show the promt
+	li $v0,  4
+	la  $a0, prompt
+	syscall
 
-    li $v0, 4
-    la $a0, numberEnter
-    syscall
+# Read the first number
+	li $v0, 5
+	syscall
 
-    li $v0, 5
-    syscall
-    move $t0, $v0
+# Move the first number into $s0
+	add $s0, $v0, $zero
 
-    li $v0, 4
-    la $a0, numberEnter
-    syscall
+# Show the promt
+	li $v0, 4
+	la $a0, prompt
+	syscall
 
-    li $v0, 5
-    syscall
-    move $t1, $v0
+# Read the second number
+	li $v0, 5
+	syscall
 
-    li $v0, 4
-    la $a0, numberEnter
-    syscall
+# Move the second number into $s1
+    add $s1, $v0, $zero
 
-    li $v0, 5
-    syscall
-    move $t2, $v0
+# Third try
+	li $v0, 4
+	la $a0, prompt
+	syscall
 
-    slt $t6, $t1, $t0
-    beq $t6, 1, first
-    move $t3, $t0
-    move $t5, $t1
-    move $t4, $t2
-    syscall
+	li $v0, 5
+	syscall
 
-first:
-    move $t3, $t1
-    move $t5, $t0
-    move $t4, $t2
-    slt $t6, $t2, $t3
-    beq $t6, 1, second
-    syscall
+	add $s2, $v0, $zero
 
-second:
-    move $t4, $t3
-    move $t3, $t2
-    syscall
-    slt $t6, $t5, $t4,
-    beq $t6, 1 , third
-    syscall
 
-thrid:
-    move $t7, $t4
-    move $t4, $t5
-    move $t5, $t7
+	blt $s0, $s1, else_1
+	blt $s0, $s2, else_2
+	blt $s1, $s2, else_3
+# if s0 > s1 > s2, then s1 is the median number. Print s1!
+	li $v0, 1
+    la $a0, $s1  #move here?
+	syscall
+	j exit
 
-    li $v0, 4
-    la &a0, medianNo
-    syscall
+else_1:  # if s0 < s1
+	bge $s0, $s2, else_4
+	bge $s2, $s1, else_5
+	li $v0, 1
+	move $a0, $s2
+	syscall
+	j exit
 
-    li $v0, 1
-    li $a0, $t4
-    syscall
+else_2: # if s0 < s2
+	li $v0, 1
+	move $a0, $s0
+	syscall
+	j exit
+
+else_3: # if s1 < s2
+	li $v0, 1
+	move $a0, $s2
+	syscall
+	j exit
+
+else_4:
+	li $v0, 1
+	move $a0, $s0
+	syscall
+	j exit
+
+else_5:
+	li $v0, 1
+	move $a0, $s1
+	syscall
 
 exit:
-
 	# Exit
 	ori     $v0, $0, 10
 	syscall

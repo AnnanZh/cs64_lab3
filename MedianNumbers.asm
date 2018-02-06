@@ -1,94 +1,94 @@
 # xSpim MedianNumbers.asm program
-#Xingxing,Geng 02/03 
+# 
 #
 
 #  Data Area - allocate and initialize variables
 .data
 
 	# TODO: Complete these declarations / initializations
-prompt:
-	.asciiz "Enter the next number:\n"
 
-result:
-	.asciiz "Median: "
+name1:	.asciiz "Enter the next number:\n"
+
+name2:	.asciiz "Median: "
 
 
 #Text Area (i.e. instructions)
 .text
 
 main:
-	#Display the prompt
-	ori $v0, $zero, 4
-	la  $a0, prompt
+
+	# TODO: Write your code here
+	li $v0, 4
+	la $a0, name1
 	syscall
 
-	#Read the 1st number
-	ori $v0, $zero, 5
+	
+	li $v0, 5
+	syscall
+	move $t0, $v0
+
+	li $v0, 4
+	la $a0, name1
 	syscall
 
-	# Put the 1st number into $s0
-	add $s0, $v0, $zero
+	li $v0, 5
+	syscall
+	move $t1, $v0
 
-	#second turn
-	ori $v0, $zero, 4
-	la $a0, prompt
+	li $v0, 4
+	la $a0, name1
 	syscall
 
-	ori $v0, $zero, 5
+	li $v0, 5
+	syscall
+	move $t2, $v0
+
+	slt $t7, $t1, $t0
+	bne $t7, $zero, first_try
+	move $t3, $t0
+	move $t5, $t1
+	move $t4, $t2
+
+
+second_compare:	
+	slt $t8, $t4, $t3
+	bne $t8, $zero, second_try
+	
+
+third_compare:	
+	slt $t9, $t5, $t4
+	bne $t9, $zero, third_try
+	j print_part
+	
+
+
+first_try:
+	move $t3, $t1
+	move $t5, $t0
+	move $t4, $t2
+	j second_compare
+
+second_try:
+	move $t4, $t3
+	move $t3, $t2
+	j third_compare
+
+third_try:
+	move $t6, $t4
+	move $t4, $t5
+	move $t5, $t6
+	
+print_part:	
+	li $v0, 4
+	la $a0, name2
 	syscall
 
-	add $s1, $v0, $zero
-
-	#third turn
-	ori $v0, $zero, 4
-	la $a0,prompt
-	syscall
-
-	ori $v0, $zero, 5
-	syscall
-
-	add $s2, $v0, $zero
-
-	ble $s0, $s1, else_1
-	ble $s0, $s2, else_2
-	ble $s1, $s2, else_3
 	li $v0, 1
-	move $a0, $s1
-	syscall
-	j exit
-
-else_1:
-	bge $s0, $s2, else_4
-	bge $s2, $s1, else_5
-	li $v0, 1
-	move $a0, $s2
-	syscall
-	j exit
-
-else_2:
-	li $v0, 1
-	move $a0, $s0
-	syscall
-	j exit
-
-else_3:
-	li $v0, 1
-	move $a0, $s2
-	syscall
-	j exit
-
-else_4:
-	li $v0, 1
-	move $a0, $s0
-	syscall
-	j exit
-
-else_5:
-	li $v0, 1
-	move $a0, $s1
+	move $a0, $t4
 	syscall
 
 exit:
+
 	# Exit
 	ori     $v0, $0, 10
 	syscall

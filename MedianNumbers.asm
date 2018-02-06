@@ -3,8 +3,9 @@
 #
 
 #  Data Area - allocate and initialize variables
-    .data
+.data
 
+	# TODO: Complete these declarations / initializations
 prompt:
 	.asciiz "Enter the next number:\n"
 
@@ -13,54 +14,50 @@ result:
 
 
 #Text Area (i.e. instructions)
-    .text
+.text
 
 main:
-# Show the promt
-	li $v0,  4
+	#Display the prompt
+	ori $v0, $zero, 4
 	la  $a0, prompt
 	syscall
 
-# Read the first number
-	li $v0, 5
+	#Read the 1st number
+	ori $v0, $zero, 5
 	syscall
 
-# Move the first number into $s0
+	# Put the 1st number into $s0
 	add $s0, $v0, $zero
 
-# Show the promt
-	li $v0, 4
+	#second turn
+	ori $v0, $zero, 4
 	la $a0, prompt
 	syscall
 
-# Read the second number
-	li $v0, 5
+	ori $v0, $zero, 5
 	syscall
 
-# Move the second number into $s1
-    add $s1, $v0, $zero
+	add $s1, $v0, $zero
 
-# Third try
-	li $v0, 4
-	la $a0, prompt
+	#third turn
+	ori $v0, $zero, 4
+	la $a0,prompt
 	syscall
 
-	li $v0, 5
+	ori $v0, $zero, 5
 	syscall
 
 	add $s2, $v0, $zero
 
-
-	blt $s0, $s1, else_1
-	blt $s0, $s2, else_2
-	blt $s1, $s2, else_3
-# if s0 > s1 > s2, then s1 is the median number. Print s1!
+	ble $s0, $s1, else_1
+	ble $s0, $s2, else_2
+	ble $s1, $s2, else_3
 	li $v0, 1
-    la $a0, $s1  #move here?
+	move $a0, $s1
 	syscall
 	j exit
 
-else_1:  # if s0 < s1
+else_1:
 	bge $s0, $s2, else_4
 	bge $s2, $s1, else_5
 	li $v0, 1
@@ -68,13 +65,13 @@ else_1:  # if s0 < s1
 	syscall
 	j exit
 
-else_2: # if s0 < s2
+else_2:
 	li $v0, 1
 	move $a0, $s0
 	syscall
 	j exit
 
-else_3: # if s1 < s2
+else_3:
 	li $v0, 1
 	move $a0, $s2
 	syscall
